@@ -18,6 +18,7 @@ filetype plugin indent on    " required
 " Plugins
 
 Plugin 't9md/vim-ruby-xmpfilter'
+Plugin 'altercation/vim-colors-solarized'
 
 " vim-ruby-xmpfilter bindings
 map <F4> <Plug>(xmpfilter-mark)
@@ -40,6 +41,9 @@ map <F5> <Plug>(xmpfilter-run)
 set number
 syntax on
 let mapleader=","
+set background=dark
+let g:solarized_termcolors = 256
+colorscheme solarized
 
 " Enable filetype plugins
 :filetype plugin on
