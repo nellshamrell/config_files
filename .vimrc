@@ -2,66 +2,32 @@
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
-"set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
-" alternatively, pass a path where Vundle should install plugins
-" "call vundle#begin('~/some/path/here')
-
-" let Vundle manage Vundle, required
-Plugin 'gmarik/Vundle.vim'
-
-" All of your Plugins must be added before the following line
-call vundle#end()            " required
-filetype plugin indent on    " required
-
-" Plugins
-
-Plugin 't9md/vim-ruby-xmpfilter'
-Plugin 'altercation/vim-colors-solarized'
-
-" vim-ruby-xmpfilter bindings
-map <F4> <Plug>(xmpfilter-mark)
-map <F5> <Plug>(xmpfilter-run)
-
-" To ignore plugin indent changes, instead use:
-" "filetype plugin on
-" "
-" " Brief help
-" " :PluginList       - lists configured plugins
-" " :PluginInstall    - installs plugins; append `!` to update or just
-" :PluginUpdate
-" " :PluginSearch foo - searches for foo; append `!` to refresh local cache
-" " :PluginClean      - confirms removal of unused plugins; append `!` to
-" auto-approve removal
-" "
-" " see :h vundle for more details or wiki for FAQ
-" " Put your non-Plugin stuff after this line
-
 set number
-syntax on
-let mapleader=","
-set background=dark
-let g:solarized_termcolors = 256
-colorscheme solarized
+set paste
+
+let mmapleader=","
+let maplocalleader=","
+
 
 " Enable filetype plugins
 :filetype plugin on
 " Normally we use vim-extensions. If you want true vi-compatibility
 " remove change the following statements
-set nocompatible	" Use Vim defaults instead of 100% vi compatibility
-set backspace=indent,eol,start	" more powerful backspacing
+set nocompatible        " Use Vim defaults instead of 100% vi compatibility
+set backspace=indent,eol,start  " more powerful backspacing
 
 " Now we set some defaults for the editor
-set autoindent		" always set autoindenting on
-set textwidth=0		" Don't wrap words by default
-set viminfo='20,\"50	" read/write a .viminfo file, don't store more than
-			" 50 lines of registers
-set history=500		" keep 50 lines of command line history
-set ruler		" show the cursor position all the time
+set autoindent          " always set autoindenting on
+set textwidth=0         " Don't wrap words by default
+set viminfo='20,\"50    " read/write a .viminfo file, don't store more than
+                        " 50 lines of registers
+set history=500         " keep 50 lines of command line history
+set ruler               " show the cursor position all the time
 set expandtab           " insert space characters when the tab key is pressed
-set tabstop=2           " set tab to 2 spaces
-set shiftwidth=2        " when indenting, do 2 spaces
+set tabstop=4           " set tab to 4 spaces
+set shiftwidth=4        " when indenting, do 4 spaces
+
+autocmd FileType * setlocal formatoptions-=c formatoptions-=r formatoptions-=o
 
 " Don't do swap files
 set noswapfile
@@ -87,87 +53,52 @@ if has("autocmd")
 
 endif " has ("autocmd")
 
-set showmatch		" Show matching brackets.
+set showmatch           " Show matching brackets.
 
-" Testing!
-nnoremap <leader>. :call OpenTestAlternate()<cr>
-map <leader>t :call RunTestFile()<cr>
-map <leader>T :call RunNearestTest()<cr>
+" Plugins
+" Specify a directory for plugins (for Neovim: ~/.local/share/nvim/plugged)
+ call plug#begin('~/.vim/plugged')
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" SWITCH BETWEEN TEST AND PRODUCTION CODE
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-function! OpenTestAlternate()
-  let new_file = AlternateForCurrentFile()
-  " Open in vertical split
-  exec ':vs'
-  exec ':e ' . new_file
-endfunction
-function! AlternateForCurrentFile()
-  let current_file = expand("%")
-  let new_file = current_file
-  let in_spec = match(current_file, '^spec/') != -1
-  let going_to_spec = !in_spec
-  let in_app = match(current_file, '\<controllers\>') != -1 || match(current_file, '\<models\>') != -1 || match(current_file, '\<views\>') != -1 || match(current_file, '\<services\>') != -1 || match(current_file, '\<helpers\>') != -1
-  if going_to_spec
-    if in_app
-      let new_file = substitute(new_file, '^app/', '', '')
-    end
-    let new_file = substitute(new_file, '\.rb$', '_spec.rb', '')
-    let new_file = 'spec/' . new_file
-  else
-    let new_file = substitute(new_file, '_spec\.rb$', '.rb', '')
-    let new_file = substitute(new_file, '^spec/', '', '')
-    if in_app
-      let new_file = 'app/' . new_file
-    end
-  endif
-  return new_file
-endfunction
+" Make sure you use single quotes
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" RUNNING TESTS
-" """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+Plug 'tpope/vim-fugitive'
+Plug 'scrooloose/nerdtree'
+Plug 'rust-lang/rust.vim'
+Plug 'airblade/vim-gitgutter'
+Plug 'racer-rust/vim-racer'
+Plug 'roxma/nvim-completion-manager'
+Plug 'roxma/nvim-cm-racer'
 
-function! RunTestFile(...)
-    if a:0
-        let command_suffix = a:1
-    else
-        let command_suffix = ""
-    endif
+" (Optional) Multi-entry selection UI.
+Plug 'junegunn/fzf'
+" (Optional) Multi-entry selection UI.
+Plug 'Shougo/denite.nvim'
 
-" Run the tests for the previously-marked file.
-    let in_test_file = match(expand("%"), '\(.feature\|_spec.rb\)$') != -1
-    if in_test_file
-        call SetTestFile()
-    elseif !exists("t:grb_test_file")
-        return
-    end
-    call RunTests(t:grb_test_file . command_suffix)
-endfunction
+" (Optional) Completion integration with deoplete.
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+" (Optional) Completion integration with nvim-completion-manager.
+Plug 'roxma/nvim-completion-manager'
 
-function! RunNearestTest()
-    let spec_line_number = line('.')
-    call RunTestFile(":" . spec_line_number)
-endfunction
+" (Optional) Showing function signature and inline doc.
+Plug 'Shougo/echodoc.vim'
 
-function! SetTestFile()
-" Set the spec file that tests will be run for.
-    let t:grb_test_file=@%
-endfunction
+Plug 'junegunn/vim-easy-align' " vim-easy-align
 
-function! RunTests(filename)
-" Write the file and run tests for the given filename
-    :w
-    :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo;echo
-    :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo;echo
-    :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo;echo
-    :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo;echo
-    :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo;echo
-    :silent !echo;echo;echo;echo;echo;echo;echo;echo;echo;echo
-    if filereadable("config/environment.rb")
-        exec ":!rspec --color --format=nested --order default " . a:filename
-    else
-        exec ":!rspec --color --format=nested " . a:filename
-    end
-endfunction
+Plug 'Valloric/YouCompleteMe'
+
+Plug 'vim-ruby/vim-ruby'
+
+Plug 'pangloss/vim-javascript'
+
+Plug 'rust-lang/rust.vim'
+
+" Initialize plugin system
+call plug#end()
+
+map <C-n> :NERDTreeToggle<CR>
+
+set hidden
+
+" Required for operations modifying multiple buffers like rename.
