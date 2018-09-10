@@ -2,7 +2,7 @@
   aa = add
   b = branch
   ba = branch -a
-  ci = commit
+  ci = commit -s
   co = checkout
   d = diff
   dc = diff --cached
@@ -29,4 +29,6 @@
 	name = Nell Shamrell
 	email = nellshamrell@gmail.com
 [core]
-	editor = /usr/bin/vim
+editor = /usr/bin/vim
+[github]
+	token = 9008598371a961ad1a4804cb3413bf23f7d875b0
